@@ -1,0 +1,242 @@
+COMPONENTS:
+ - ESP: 
+ - C_ESP: 100nF 0805 capacitor
+ - ENC: 
+ - RPU_A: 10kΩ res0805 resistor
+ - RPU_B: 10kΩ res0805 resistor
+ - RPU_SW: 10kΩ res0805 resistor
+ - C_A: 10nF 0805 capacitor
+ - C_B: 10nF 0805 capacitor
+ - C_SW: 10nF 0805 capacitor
+ - J_RDR: 
+ - C_RDR: 100nF 0805 capacitor
+ - U_BUCK: 
+ - R_LED: 1kΩ res0805 resistor
+ - LED_PWR: LED_PWR, source_component
+ - Q_WW: sot23
+ - RG_WW: 100Ω res0805 resistor
+ - RPD_WW: 10kΩ res0805 resistor
+ - Q_CW: sot23
+ - RG_CW: 100Ω res0805 resistor
+ - RPD_CW: 10kΩ res0805 resistor
+ - J_IN: 
+ - D1: D1, source_component
+ - C_BULK: 220uF capacitor
+ - J_OUT: 
+
+NET: V3V3
+  - RPU_SW pin2
+  - RPU_B pin2
+  - RPU_A pin2
+  - ESP V3V3
+
+NET: ENC_A
+  - C_A pin1 (+)
+  - RPU_A pin1
+  - ESP IO4
+
+NET: ENC_B
+  - C_B pin1 (+)
+  - RPU_B pin1
+  - ESP IO5
+
+NET: ENC_SW
+  - C_SW pin1 (+)
+  - RPU_SW pin1
+  - ESP IO6
+
+NET: RDR_TX
+  - J_RDR TX
+  - ESP IO20
+
+NET: RDR_RX
+  - J_RDR RX
+  - ESP IO21
+
+NET: RDR_OUT
+  - J_RDR OUT
+  - ESP IO7
+
+NET: V5
+  - R_LED pin1
+  - U_BUCK OUTp
+  - C_RDR pin1 (+)
+  - J_RDR VCC
+  - C_ESP pin1 (+)
+  - ESP 5V
+
+NET: LED_PWR_pos
+  - R_LED pin2
+  - LED_PWR pin1 (+)
+
+NET: PWM_WW
+  - RG_WW pin1
+  - ESP IO10
+
+NET: Q_WW_G
+  - RPD_WW pin1
+  - RG_WW pin2
+  - Q_WW G
+
+NET: PWM_CW
+  - RG_CW pin1
+  - ESP IO3
+
+NET: Q_CW_G
+  - RPD_CW pin1
+  - RG_CW pin2
+  - Q_CW G
+
+NET: D1_pos
+  - J_IN V24
+  - D1 pin1 (+)
+
+NET: GND
+  - C_BULK pin2 (-)
+  - J_IN GND
+  - Q_CW S
+  - RPD_CW pin2
+  - Q_WW S
+  - RPD_WW pin2
+  - LED_PWR pin2 (-)
+  - U_BUCK OUTn
+  - U_BUCK INn
+  - C_RDR pin2 (-)
+  - J_RDR GND
+  - C_SW pin2 (-)
+  - C_B pin2 (-)
+  - C_A pin2 (-)
+  - C_ESP pin2 (-)
+  - ESP GND
+
+NET: V24
+  - J_OUT Vplus
+  - C_BULK pin1 (+)
+  - D1 pin2 (-)
+  - U_BUCK INp
+
+NET: WW
+  - J_OUT WW
+  - Q_WW D
+
+NET: CW
+  - J_OUT CW
+  - Q_CW D
+
+
+COMPONENT_PINS:
+ESP
+- pin1(5V): NETS(V5)
+- pin2(GND): NETS(GND)
+- pin3(V3V3): NETS(V3V3)
+- pin4(IO4): NETS(ENC_A)
+- pin5(IO3): NETS(PWM_CW)
+- pin6(IO2): NOT_CONNECTED
+- pin7(IO1): NOT_CONNECTED
+- pin8(IO0): NOT_CONNECTED
+- pin9(IO5): NETS(ENC_B)
+- pin10(IO6): NETS(ENC_SW)
+- pin11(IO7): NETS(RDR_OUT)
+- pin12(IO8): NOT_CONNECTED
+- pin13(IO9): NOT_CONNECTED
+- pin14(IO10): NETS(PWM_WW)
+- pin15(IO20): NETS(RDR_TX)
+- pin16(IO21): NETS(RDR_RX)
+
+C_ESP (100nF 0805)
+- pin1(pos, anode, left): NETS(V5)
+- pin2(neg, cathode, right): NETS(GND)
+
+ENC
+
+RPU_A (10kΩ res0805)
+- pin1(anode, pos, left): NETS(ENC_A)
+- pin2(cathode, neg, right): NETS(V3V3)
+
+RPU_B (10kΩ res0805)
+- pin1(anode, pos, left): NETS(ENC_B)
+- pin2(cathode, neg, right): NETS(V3V3)
+
+RPU_SW (10kΩ res0805)
+- pin1(anode, pos, left): NETS(ENC_SW)
+- pin2(cathode, neg, right): NETS(V3V3)
+
+C_A (10nF 0805)
+- pin1(pos, anode, left): NETS(ENC_A)
+- pin2(neg, cathode, right): NETS(GND)
+
+C_B (10nF 0805)
+- pin1(pos, anode, left): NETS(ENC_B)
+- pin2(neg, cathode, right): NETS(GND)
+
+C_SW (10nF 0805)
+- pin1(pos, anode, left): NETS(ENC_SW)
+- pin2(neg, cathode, right): NETS(GND)
+
+J_RDR
+- pin1(VCC): NETS(V5)
+- pin2(GND): NETS(GND)
+- pin3(TX): NETS(RDR_TX)
+- pin4(RX): NETS(RDR_RX)
+- pin5(OUT): NETS(RDR_OUT)
+
+C_RDR (100nF 0805)
+- pin1(pos, anode, left): NETS(V5)
+- pin2(neg, cathode, right): NETS(GND)
+
+U_BUCK
+- pin1(INp): NETS(V24)
+- pin2(INn): NETS(GND)
+- pin3(OUTp): NETS(V5)
+- pin4(OUTn): NETS(GND)
+
+R_LED (1kΩ res0805)
+- pin1(anode, pos, left): NETS(V5)
+- pin2(cathode, neg, right): NETS(LED_PWR_pos)
+
+LED_PWR
+- pin1(anode, pos, left): NETS(LED_PWR_pos)
+- pin2(cathode, neg, right): NETS(GND)
+
+Q_WW
+- pin1(G): NETS(Q_WW_G)
+- pin2(S): NETS(GND)
+- pin3(D): NETS(WW)
+
+RG_WW (100Ω res0805)
+- pin1(anode, pos, left): NETS(PWM_WW)
+- pin2(cathode, neg, right): NETS(Q_WW_G)
+
+RPD_WW (10kΩ res0805)
+- pin1(anode, pos, left): NETS(Q_WW_G)
+- pin2(cathode, neg, right): NETS(GND)
+
+Q_CW
+- pin1(G): NETS(Q_CW_G)
+- pin2(S): NETS(GND)
+- pin3(D): NETS(CW)
+
+RG_CW (100Ω res0805)
+- pin1(anode, pos, left): NETS(PWM_CW)
+- pin2(cathode, neg, right): NETS(Q_CW_G)
+
+RPD_CW (10kΩ res0805)
+- pin1(anode, pos, left): NETS(Q_CW_G)
+- pin2(cathode, neg, right): NETS(GND)
+
+J_IN
+- pin1(V24): NETS(D1_pos)
+- pin2(GND): NETS(GND)
+
+D1
+- pin1(pos, anode, left): NETS(D1_pos)
+- pin2(neg, cathode, right): NETS(V24)
+
+C_BULK (220uF undefined)
+- pin1(pos): NETS(V24)
+- pin2(neg): NETS(GND)
+
+J_OUT
+- pin1(Vplus): NETS(V24)
+- pin2(WW): NETS(WW)
+- pin3(CW): NETS(CW)
