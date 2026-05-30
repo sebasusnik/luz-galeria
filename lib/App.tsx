@@ -49,17 +49,17 @@ export default () => (
     minPadEdgeToPadEdgeClearance="0.2mm"
     minTraceToPadEdgeClearance="0.2mm"
   >
-    {/* ---- Signal zone (left) ---- */}
-    <Microcontroller pcbX={-19} pcbY={10} pcbRotation={180} />
-    <EncoderInput pcbX={-30} pcbY={-14} />
-    <RadarConnector pcbX={-4} pcbY={-22} />
+    {/* ---- I/O at the SHORT edges: both terminals on -X edge (cables exit
+        same narrow side), encoder on +X edge (knob alone, easy access) ---- */}
+    <PowerInput pcbX={-32} pcbY={13} />
+    <OutputTerminal pcbX={-32} pcbY={-3} />
+    <EncoderInput pcbX={27} pcbY={0} />
 
-    {/* ---- Power zone (right). KiCad terminal footprints origin at pin1; body
-        extends +X, so pin1 (group pcbX) is the left screw. ---- */}
-    <BuckRegulator pcbX={6} pcbY={14} />
-    <MosfetDriver pcbX={6} pcbY={-7} />
-    <PowerInput pcbX={27} pcbY={16} />
-    <OutputTerminal pcbX={14} pcbY={-15} />
+    {/* ---- Interior: signal up-left, power across the middle ---- */}
+    <Microcontroller pcbX={-19} pcbY={10} pcbRotation={180} />
+    <RadarConnector pcbX={-4} pcbY={-22} />
+    <BuckRegulator pcbX={2} pcbY={14} />
+    <MosfetDriver pcbX={0} pcbY={-6} />
 
     {/* ---- Mounting (M3, 4 corners) ---- */}
     <MountingHole x={-MX} y={MY} />
@@ -75,12 +75,12 @@ export default () => (
       padMargin="0.4mm"
       traceMargin="0.3mm"
     />
-    <StitchVia x={0} y={23} />
+    <StitchVia x={0} y={22} />
     <StitchVia x={0} y={-23} />
-    <StitchVia x={4} y={0} />
-    <StitchVia x={-32} y={6} />
-    <StitchVia x={33} y={3} />
-    <StitchVia x={33} y={-22} />
+    <StitchVia x={-15} y={-19} />
+    <StitchVia x={15} y={-19} />
+    <StitchVia x={15} y={6} />
+    <StitchVia x={-22} y={-9} />
 
     {/* ---- Board identity ---- */}
     <silkscreentext text="LUZ-GALERIA v1.0" fontSize={1.6} pcbX={-2} pcbY={-23.2} />

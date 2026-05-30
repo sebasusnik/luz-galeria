@@ -1,6 +1,8 @@
 COMPONENTS:
- - ESP: 
- - C_ESP: 100nF capacitor
+ - J_IN: 
+ - D1: D1, source_component
+ - C_BULK: 220uF capacitor
+ - J_OUT: 
  - ENC: 
  - RPU_A: 10kΩ resistor
  - RPU_B: 10kΩ resistor
@@ -8,6 +10,8 @@ COMPONENTS:
  - C_A: 10nF capacitor
  - C_B: 10nF capacitor
  - C_SW: 10nF capacitor
+ - ESP: 
+ - C_ESP: 100nF capacitor
  - J_RDR: 
  - C_RDR: 100nF capacitor
  - U_BUCK: 
@@ -19,34 +23,34 @@ COMPONENTS:
  - Q_CW: 
  - RG_CW: 100Ω resistor
  - RPD_CW: 10kΩ resistor
- - J_IN: 
- - D1: D1, source_component
- - C_BULK: 220uF capacitor
- - J_OUT: 
+
+NET: D1_pos
+  - J_IN V24
+  - D1 pin1 (+)
 
 NET: V3V3
+  - ESP V3V3
   - RPU_SW pin2
   - RPU_B pin2
   - RPU_A pin2
-  - ESP V3V3
 
 NET: ENC_A
+  - ESP IO4
   - C_A pin1 (+)
   - RPU_A pin1
   - ENC pin2
-  - ESP IO4
 
 NET: ENC_B
+  - ESP IO5
   - C_B pin1 (+)
   - RPU_B pin1
   - ENC pin3
-  - ESP IO5
 
 NET: ENC_SW
+  - ESP IO6
   - C_SW pin1 (+)
   - RPU_SW pin1
   - ENC pin4
-  - ESP IO6
 
 NET: RDR_TX
   - J_RDR TX
@@ -59,6 +63,12 @@ NET: RDR_RX
 NET: RDR_OUT
   - J_RDR OUT
   - ESP IO7
+
+NET: V24
+  - U_BUCK INp
+  - J_OUT Vplus
+  - C_BULK pin1 (+)
+  - D1 pin2 (-)
 
 NET: V5
   - R_LED pin1
@@ -81,6 +91,10 @@ NET: Q_WW_G
   - RG_WW pin2
   - Q_WW pin1
 
+NET: WW
+  - Q_WW pin2
+  - J_OUT WW
+
 NET: PWM_CW
   - RG_CW pin1
   - ESP IO3
@@ -90,13 +104,7 @@ NET: Q_CW_G
   - RG_CW pin2
   - Q_CW pin1
 
-NET: D1_pos
-  - J_IN V24
-  - D1 pin1 (+)
-
 NET: GND
-  - C_BULK pin2 (-)
-  - J_IN GND
   - Q_CW pin3
   - RPD_CW pin2
   - Q_WW pin3
@@ -106,6 +114,8 @@ NET: GND
   - U_BUCK INn
   - C_RDR pin2 (-)
   - J_RDR GND
+  - C_ESP pin2 (-)
+  - ESP GND
   - C_SW pin2 (-)
   - C_B pin2 (-)
   - C_A pin2 (-)
@@ -113,46 +123,31 @@ NET: GND
   - ENC pin6
   - ENC pin5
   - ENC pin1
-  - C_ESP pin2 (-)
-  - ESP GND
-
-NET: V24
-  - J_OUT Vplus
-  - C_BULK pin1 (+)
-  - D1 pin2 (-)
-  - U_BUCK INp
-
-NET: WW
-  - J_OUT WW
-  - Q_WW pin2
+  - C_BULK pin2 (-)
+  - J_IN GND
 
 NET: CW
-  - J_OUT CW
   - Q_CW pin2
+  - J_OUT CW
 
 
 COMPONENT_PINS:
-ESP
-- pin1(5V): NETS(V5)
+J_IN
+- pin1(V24): NETS(D1_pos)
 - pin2(GND): NETS(GND)
-- pin3(V3V3): NETS(V3V3)
-- pin4(IO4): NETS(ENC_A)
-- pin5(IO3): NETS(PWM_CW)
-- pin6(IO2): NOT_CONNECTED
-- pin7(IO1): NOT_CONNECTED
-- pin8(IO0): NOT_CONNECTED
-- pin9(IO5): NETS(ENC_B)
-- pin10(IO6): NETS(ENC_SW)
-- pin11(IO7): NETS(RDR_OUT)
-- pin12(IO8): NOT_CONNECTED
-- pin13(IO9): NOT_CONNECTED
-- pin14(IO10): NETS(PWM_WW)
-- pin15(IO20): NETS(RDR_TX)
-- pin16(IO21): NETS(RDR_RX)
 
-C_ESP (100nF undefined)
-- pin1(pos, left, anode): NETS(V5)
-- pin2(neg, right, cathode): NETS(GND)
+D1
+- pin1(pos, anode, left): NETS(D1_pos)
+- pin2(neg, cathode, right): NETS(V24)
+
+C_BULK (220uF undefined)
+- pin1(pos): NETS(V24)
+- pin2(neg): NETS(GND)
+
+J_OUT
+- pin1(Vplus): NETS(V24)
+- pin2(WW): NETS(WW)
+- pin3(CW): NETS(CW)
 
 ENC
 - pin1(C): NETS(GND)
@@ -185,6 +180,28 @@ C_B (10nF undefined)
 
 C_SW (10nF undefined)
 - pin1(pos, left, anode): NETS(ENC_SW)
+- pin2(neg, right, cathode): NETS(GND)
+
+ESP
+- pin1(5V): NETS(V5)
+- pin2(GND): NETS(GND)
+- pin3(V3V3): NETS(V3V3)
+- pin4(IO4): NETS(ENC_A)
+- pin5(IO3): NETS(PWM_CW)
+- pin6(IO2): NOT_CONNECTED
+- pin7(IO1): NOT_CONNECTED
+- pin8(IO0): NOT_CONNECTED
+- pin9(IO5): NETS(ENC_B)
+- pin10(IO6): NETS(ENC_SW)
+- pin11(IO7): NETS(RDR_OUT)
+- pin12(IO8): NOT_CONNECTED
+- pin13(IO9): NOT_CONNECTED
+- pin14(IO10): NETS(PWM_WW)
+- pin15(IO20): NETS(RDR_TX)
+- pin16(IO21): NETS(RDR_RX)
+
+C_ESP (100nF undefined)
+- pin1(pos, left, anode): NETS(V5)
 - pin2(neg, right, cathode): NETS(GND)
 
 J_RDR
@@ -237,20 +254,3 @@ RG_CW (100Ω undefined)
 RPD_CW (10kΩ undefined)
 - pin1(anode, pos, left): NETS(Q_CW_G)
 - pin2(cathode, neg, right): NETS(GND)
-
-J_IN
-- pin1(V24): NETS(D1_pos)
-- pin2(GND): NETS(GND)
-
-D1
-- pin1(pos, anode, left): NETS(D1_pos)
-- pin2(neg, cathode, right): NETS(V24)
-
-C_BULK (220uF undefined)
-- pin1(pos): NETS(V24)
-- pin2(neg): NETS(GND)
-
-J_OUT
-- pin1(Vplus): NETS(V24)
-- pin2(WW): NETS(WW)
-- pin3(CW): NETS(CW)

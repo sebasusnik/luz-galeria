@@ -16,9 +16,11 @@ export const BuckRegulator = (props: Props) => (
       cadModel={headerModuleModel({ width: 22, depth: 17, bodyH: 5, color: [0.1, 0.1, 0.12] })}
     />
 
-    <resistor name="R_LED" resistance="1k" footprint={<AxialResistorFootprint />} pcbX={-3} pcbY={-12} />
-    <led name="LED_PWR" color="green" footprint={<ThtLedFootprint />} pcbX={5} pcbY={-12} />
-    <silkscreentext text="PWR" fontSize={0.8} pcbX={8} pcbY={-12} />
+    {/* power-on LED row tucked just below the MP1584 body (y=-10 rel) so it
+        clears C_ESP (left) and the encoder pull-ups (right) at world y~+4 */}
+    <resistor name="R_LED" resistance="1k" footprint={<AxialResistorFootprint />} pcbX={-3} pcbY={-10} />
+    <led name="LED_PWR" color="green" footprint={<ThtLedFootprint />} pcbX={5} pcbY={-10} />
+    <silkscreentext text="PWR" fontSize={0.8} pcbX={8} pcbY={-10} />
 
     <trace from=".U_BUCK > .INp" to="net.V24" thickness="1mm" />
     <trace from=".U_BUCK > .INn" to="net.GND" thickness="1mm" />

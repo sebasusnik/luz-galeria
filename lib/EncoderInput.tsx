@@ -15,18 +15,24 @@ export const EncoderInput = (props: Props) => (
       footprint={<Ec11Footprint />}
       pcbX={0}
       pcbY={0}
-      cadModel={encoderModel()}
+      cadModel={{
+        ...encoderModel(),
+        // PCB mounts upside-down under the cabinet, so the shaft physically
+        // hangs DOWN. Flipping the model 180deg on X makes the render show it
+        // pointing down too (matches the install orientation visually).
+        rotationOffset: { x: 180, y: 0, z: 0 },
+      }}
     />
 
-    {/* support passives sit in the open area to the +X side, clear of the
-        encoder body courtyard (which extends ~+15mm from pin1) */}
-    <resistor name="RPU_A" resistance="10k" footprint={<AxialResistorFootprint />} pcbX={20} pcbY={9} />
-    <resistor name="RPU_B" resistance="10k" footprint={<AxialResistorFootprint />} pcbX={20} pcbY={5} />
-    <resistor name="RPU_SW" resistance="10k" footprint={<AxialResistorFootprint />} pcbX={20} pcbY={1} />
+    {/* support passives sit on the -X side (toward the board interior), since
+        the encoder is now mounted at the right short edge of the board */}
+    <resistor name="RPU_A" resistance="10k" footprint={<AxialResistorFootprint />} pcbX={-12} pcbY={9} />
+    <resistor name="RPU_B" resistance="10k" footprint={<AxialResistorFootprint />} pcbX={-12} pcbY={5} />
+    <resistor name="RPU_SW" resistance="10k" footprint={<AxialResistorFootprint />} pcbX={-12} pcbY={1} />
 
-    <capacitor name="C_A" capacitance="10nF" footprint={<CeramicCapFootprint />} pcbX={20} pcbY={-3} />
-    <capacitor name="C_B" capacitance="10nF" footprint={<CeramicCapFootprint />} pcbX={20} pcbY={-6} />
-    <capacitor name="C_SW" capacitance="10nF" footprint={<CeramicCapFootprint />} pcbX={20} pcbY={-9} />
+    <capacitor name="C_A" capacitance="10nF" footprint={<CeramicCapFootprint />} pcbX={-12} pcbY={-3} />
+    <capacitor name="C_B" capacitance="10nF" footprint={<CeramicCapFootprint />} pcbX={-12} pcbY={-6} />
+    <capacitor name="C_SW" capacitance="10nF" footprint={<CeramicCapFootprint />} pcbX={-12} pcbY={-9} />
 
     {/* encoder pins */}
     <trace from=".ENC > .A" to="net.ENC_A" />

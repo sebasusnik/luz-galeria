@@ -37,7 +37,7 @@ export const Microcontroller = (props: Props) => (
     />
 
     {/* 100nF decoupling at the 5V header pin (pin1 @ top-left) */}
-    <capacitor name="C_ESP" capacitance="100nF" footprint={<CeramicCapFootprint />} pcbX={-12} pcbY={8.9} />
+    <capacitor name="C_ESP" capacitance="100nF" footprint={<CeramicCapFootprint />} pcbX={-13} pcbY={8.9} />
 
     {/* copper keep-out over the PCB antenna (+Y end), both layers */}
     <keepout shape="rect" width="12mm" height="6mm" pcbX={0} pcbY={12.5} layer="top" />

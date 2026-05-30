@@ -10,19 +10,24 @@ const TERMINAL_2P = "kicad:TerminalBlock/TerminalBlock_MaiXu_MX126-5.0-02P_1x02_
 // (buck, strip V+, MOSFET drains) is protected. net.V24 is the protected rail.
 export const PowerInput = (props: Props) => (
   <group {...props}>
+    {/* J_IN rotated 270deg so pins go along Y and screw openings face -X
+        (i.e. out the LEFT short edge of the board). cadModel offsetX=+2.5
+        keeps the body box visually centered on the pin row mid-point. */}
     <chip
       name="J_IN"
       footprint={TERMINAL_2P}
       pcbX={0}
       pcbY={0}
+      pcbRotation={270}
       pinLabels={{ pin1: "V24", pin2: "GND" }}
-      cadModel={boxModel(11, 8.5, 10, { color: [0.05, 0.35, 0.12], offsetY: 3 })}
+      cadModel={boxModel(11, 8.5, 10, { color: [0.05, 0.35, 0.12], offsetX: 2.5, offsetY: 3 })}
     />
+    {/* D1 and C_BULK live on the +X (interior) side of the terminal */}
     <diode
       name="D1"
       footprint={<AxialDiodeFootprint />}
-      pcbX={-8}
-      pcbY={4}
+      pcbX={18}
+      pcbY={5}
     />
     <capacitor
       name="C_BULK"
@@ -30,13 +35,13 @@ export const PowerInput = (props: Props) => (
       maxVoltageRating="35V"
       polarized
       footprint={<BulkCapFootprint />}
-      pcbX={-7}
-      pcbY={-3.5}
+      pcbX={11}
+      pcbY={-4}
       cadModel={cylinderModel(4, 12, { color: [0.15, 0.15, 0.2] })}
     />
 
-    <silkscreentext text="24V" fontSize={0.9} pcbX={-2.5} pcbY={-3.2} />
-    <silkscreentext text="GND" fontSize={0.9} pcbX={2.5} pcbY={-3.2} />
+    <silkscreentext text="24V" fontSize={0.9} pcbX={4} pcbY={0} />
+    <silkscreentext text="GND" fontSize={0.9} pcbX={4} pcbY={-5} />
 
     {/* terminal + -> diode anode, diode cathode -> protected V24 rail */}
     <trace from=".J_IN > .pin1" to=".D1 > .anode" thickness="1mm" />

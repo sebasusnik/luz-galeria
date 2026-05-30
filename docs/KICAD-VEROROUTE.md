@@ -9,18 +9,22 @@ Cómo pasar del diseño en tscircuit a un layout de **stripboard (Veroboard)** u
 
 ## Qué hay en el repo
 
-- `exports/luz-galeria.kicad_sch` — esquemático KiCad (para intentar importar).
-- `exports/luz-galeria.netlist.txt` — **netlist legible y completo** (18 nets, cada pin). Fuente de verdad para cargar a mano.
+- **`exports/luz-galeria-kicad.zip`** — **proyecto KiCad completo** (sch + pcb + pro). Esta es la forma recomendada: descomprimís y abrís `.kicad_pro` en KiCad. Los 120+ símbolos están definidos inline en el `.kicad_sch`, así que abre sin "missing symbols".
+- `exports/luz-galeria.kicad_sch` / `.kicad_pcb` / `.kicad_pro` — los mismos archivos sueltos por si necesitás uno específico.
+- `exports/luz-galeria.netlist.txt` — netlist legible y completo (18 nets, cada pin). Fuente de verdad para cargar a mano si KiCad no anduviera o para revisión rápida.
 - `exports/stripboard.svg` — plano de stripboard alternativo (generado por `scripts/stripboard_layout.mjs`, **verificado sin cortos/opens**), por si VeroRoute no convence.
 - `scripts/stripboard_layout.mjs` — generador + verificador del plano (Node).
 - `lib/` + `index.circuit.tsx` — el diseño tscircuit (fuente del netlist).
 
+> **Versión KiCad:** los archivos son formato KiCad 9 (v20250114). KiCad 8 debería abrirlos también; con KiCad ≤7 puede que no.
+
 Regenerar los exports (si tocás el diseño):
 ```bash
 npm i      # o bun install
-npx tsci export index.circuit.tsx -f kicad_sch -o exports/luz-galeria.kicad_sch
+npx tsci build index.circuit.tsx --routing-disabled --kicad-project --kicad-project-zip
 npx tsci export index.circuit.tsx -f readable-netlist -o exports/luz-galeria.netlist.txt
 node scripts/stripboard_layout.mjs   # regenera exports/stripboard.svg + verifica
+# después copias dist/index/kicad/* y dist/index/index-kicad.zip a exports/
 ```
 
 ## Paso A — Instalar VeroRoute (Windows)
@@ -32,10 +36,9 @@ node scripts/stripboard_layout.mjs   # regenera exports/stripboard.svg + verific
 
 VeroRoute necesita la conectividad. Tres caminos, de más simple a más confiable:
 
-1. **Import directo:** en VeroRoute, File → Import, probá con `exports/luz-galeria.kicad_sch`.
-   *Puede no enganchar:* tscircuit genera el esquemático con símbolos de riel custom y formato KiCad 9; VeroRoute a veces quiere un netlist `.net` clásico.
-2. **Carga manual (más seguro):** abrí `exports/luz-galeria.netlist.txt` y cargá los 18 nets a mano en VeroRoute. Son pocos y están clarísimos (`NET: nombre` → lista de pines). ~15 min.
-3. **Path "pro":** abrí `exports/luz-galeria.kicad_sch` en KiCad (eeschema) → exportá un netlist `.net` → importá ese `.net` en VeroRoute (formato que sí entiende seguro).
+1. **Path "pro" (recomendado):** descomprimí `exports/luz-galeria-kicad.zip`, abrí `.kicad_pro` en **KiCad 8+** → desde eeschema exportá un netlist `.net` (File → Export → Netlist) → importá ese `.net` en VeroRoute (formato que entiende seguro). Esto es lo más confiable porque VeroRoute lee `.net` clásico de KiCad sin drama.
+2. **Carga manual:** abrí `exports/luz-galeria.netlist.txt` y cargá los 18 nets a mano en VeroRoute. Son pocos y están clarísimos (`NET: nombre` → lista de pines). ~15 min.
+3. **Import directo `.kicad_sch`:** en VeroRoute, File → Import, probá con `exports/luz-galeria.kicad_sch`. Puede o no enganchar (depende de la versión de VeroRoute).
 
 ## Paso C — Definir componentes / footprints
 
