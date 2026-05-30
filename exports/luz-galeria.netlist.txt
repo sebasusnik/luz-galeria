@@ -33,16 +33,19 @@ NET: V3V3
 NET: ENC_A
   - C_A pin1 (+)
   - RPU_A pin1
+  - ENC pin2
   - ESP IO4
 
 NET: ENC_B
   - C_B pin1 (+)
   - RPU_B pin1
+  - ENC pin3
   - ESP IO5
 
 NET: ENC_SW
   - C_SW pin1 (+)
   - RPU_SW pin1
+  - ENC pin4
   - ESP IO6
 
 NET: RDR_TX
@@ -106,6 +109,10 @@ NET: GND
   - C_SW pin2 (-)
   - C_B pin2 (-)
   - C_A pin2 (-)
+  - ENC pin7
+  - ENC pin6
+  - ENC pin5
+  - ENC pin1
   - C_ESP pin2 (-)
   - ESP GND
 
@@ -148,6 +155,13 @@ C_ESP (100nF 0805)
 - pin2(neg, cathode, right): NETS(GND)
 
 ENC
+- pin1(C): NETS(GND)
+- pin2(A): NETS(ENC_A)
+- pin3(B): NETS(ENC_B)
+- pin4(S1): NETS(ENC_SW)
+- pin5(S2): NETS(GND)
+- pin6(MP1): NETS(GND)
+- pin7(MP2): NETS(GND)
 
 RPU_A (10kΩ res0805)
 - pin1(anode, pos, left): NETS(ENC_A)

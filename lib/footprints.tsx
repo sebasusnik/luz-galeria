@@ -80,6 +80,53 @@ export const Mp1584Footprint = () => {
   )
 }
 
+// ---- Alps EC11E rotary encoder w/ switch (vertical THT).
+// tscircuit 0.0.1787 fails to resolve the KiCad footprint
+// (kicad:Rotary_Encoder/RotaryEncoder_Alps_EC11E-Switch_Vertical_H20mm): it loads
+// with ZERO pads, so every encoder trace silently dropped and the part was left
+// unconnected. This is the same geometry transcribed from the official KiCad
+// library (Y flipped to tscircuit's Y-up): signal pads C/A/B/S1/S2 + two 2.5mm
+// mounting posts. Ports are named, so EncoderInput wires .A/.B/.C/.S1/.S2 directly.
+const EC11_SIG_HOLE = 1.0
+const EC11_SIG_PAD = 1.8
+const EC11_MOUNT_HOLE = 2.5
+const EC11_MOUNT_PAD = 3.2
+
+export const Ec11Footprint = () => {
+  const sig = (name: string, x: number, y: number) => (
+    <platedhole
+      portHints={[name]}
+      pcbX={x}
+      pcbY={y}
+      shape="circle"
+      holeDiameter={EC11_SIG_HOLE}
+      outerDiameter={EC11_SIG_PAD}
+    />
+  )
+  const mount = (name: string, x: number) => (
+    <platedhole
+      portHints={[name]}
+      pcbX={x}
+      pcbY={0}
+      shape="circle"
+      holeDiameter={EC11_MOUNT_HOLE}
+      outerDiameter={EC11_MOUNT_PAD}
+    />
+  )
+  return (
+    <footprint>
+      {sig("C", 0, 0)}
+      {sig("A", -2.5, 2.5)}
+      {sig("B", 2.5, 2.5)}
+      {sig("S1", 7, -2.5)}
+      {sig("S2", -7, -2.5)}
+      {mount("MP1", -5.2)}
+      {mount("MP2", 5.2)}
+      <silkscreenrect width={12} height={12} pcbX={0} pcbY={0} />
+    </footprint>
+  )
+}
+
 // ---- Bulk electrolytic capacitor, radial THT, ~8mm can, 3.5mm lead pitch.
 export const BULK_CAP_LEAD_PITCH = 3.5
 

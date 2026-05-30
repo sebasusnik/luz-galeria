@@ -1,18 +1,18 @@
 import { encoderModel } from "./cad/boxes"
+import { Ec11Footprint } from "./footprints"
 
 type Props = { pcbX?: number; pcbY?: number; pcbRotation?: number | string }
 
-const EC11 = "kicad:Rotary_Encoder/RotaryEncoder_Alps_EC11E-Switch_Vertical_H20mm"
-
-// EC11 rotary encoder (vertical, soldered THT). KiCad pinout: A=pin1, B=pin2,
-// C(common)=pin3, switch S1=pin6/S2=pin7, mounting pegs MP=pin4/pin5.
+// EC11 rotary encoder (vertical, soldered THT). Custom footprint (the KiCad one
+// fails to resolve in this tscircuit version — see Ec11Footprint). Alps EC11E
+// pads: A, B = quadrature, C = common, S1/S2 = switch, MP1/MP2 = mounting posts.
 // External 10k pull-ups to 3V3 (NOT 5V — the ESP32-C3 GPIOs are 3.3V) and small
-// debounce caps. C and S2 to GND.
+// debounce caps. C, S2 and the mounting posts go to GND.
 export const EncoderInput = (props: Props) => (
   <group {...props}>
     <chip
       name="ENC"
-      footprint={EC11}
+      footprint={<Ec11Footprint />}
       pcbX={0}
       pcbY={0}
       cadModel={encoderModel()}
@@ -34,8 +34,8 @@ export const EncoderInput = (props: Props) => (
     <trace from=".ENC > .C" to="net.GND" />
     <trace from=".ENC > .S1" to="net.ENC_SW" />
     <trace from=".ENC > .S2" to="net.GND" />
-    <trace from=".ENC > .pin4" to="net.GND" />
-    <trace from=".ENC > .pin5" to="net.GND" />
+    <trace from=".ENC > .MP1" to="net.GND" />
+    <trace from=".ENC > .MP2" to="net.GND" />
 
     {/* pull-ups to 3V3 */}
     <trace from=".RPU_A > .pin1" to="net.ENC_A" />
