@@ -155,3 +155,118 @@ export const BulkCapFootprint = () => {
     </footprint>
   )
 }
+
+// ---- IRLZ44N (logic-level N-MOSFET, TO-220), vertical THT.
+// CRITICAL pinout: facing the labelled front, legs down, left-to-right is
+// pin1=Gate, pin2=Drain, pin3=Source (the metal tab is also Drain). This is
+// DIFFERENT from the SOT-23 AO3400 (G/S/D) the SMD version used, so MosfetDriver
+// rewires accordingly. Pads named G/D/S so the wiring is unambiguous.
+const TO220_PITCH = 2.54
+const TO220_HOLE = 1.1
+const TO220_PAD = 2.0
+
+export const To220Footprint = () => {
+  const leg = (name: string, n: number) => (
+    <platedhole
+      portHints={[name, `pin${n}`]}
+      pcbX={(n - 2) * TO220_PITCH}
+      pcbY={0}
+      shape="circle"
+      holeDiameter={TO220_HOLE}
+      outerDiameter={TO220_PAD}
+    />
+  )
+  return (
+    <footprint>
+      {leg("G", 1)}
+      {leg("D", 2)}
+      {leg("S", 3)}
+      {/* body + tab outline (tab points +Y) */}
+      <silkscreenrect width={10.2} height={4.6} pcbX={0} pcbY={4.5} />
+      <silkscreentext text="G" fontSize={0.9} pcbX={-TO220_PITCH} pcbY={-1.8} />
+      <silkscreentext text="D" fontSize={0.9} pcbX={0} pcbY={-1.8} />
+      <silkscreentext text="S" fontSize={0.9} pcbX={TO220_PITCH} pcbY={-1.8} />
+    </footprint>
+  )
+}
+
+// ---- 1N5822 Schottky (3A, DO-201AD axial), horizontal THT. Cathode = banded end.
+const DIODE_LEAD_PITCH = 10.16
+const DIODE_HOLE = 1.0
+const DIODE_PAD = 1.9
+
+export const AxialDiodeFootprint = () => {
+  const x = DIODE_LEAD_PITCH / 2
+  return (
+    <footprint>
+      <platedhole
+        portHints={["anode", "pin1", "pos"]}
+        pcbX={-x}
+        pcbY={0}
+        shape="circle"
+        holeDiameter={DIODE_HOLE}
+        outerDiameter={DIODE_PAD}
+      />
+      <platedhole
+        portHints={["cathode", "pin2", "neg"]}
+        pcbX={x}
+        pcbY={0}
+        shape="circle"
+        holeDiameter={DIODE_HOLE}
+        outerDiameter={DIODE_PAD}
+      />
+      <silkscreenrect width={6} height={2.6} pcbX={0} pcbY={0} />
+      {/* cathode band near +x lead */}
+      <silkscreenline x1={2} y1={-1.3} x2={2} y2={1.3} strokeWidth={0.2} />
+    </footprint>
+  )
+}
+
+// ---- Axial resistor, 1/4W, ~7.62mm lead pitch (standard bend).
+const RES_LEAD_PITCH = 7.62
+const RES_HOLE = 0.8
+const RES_PAD = 1.7
+
+export const AxialResistorFootprint = () => {
+  const x = RES_LEAD_PITCH / 2
+  return (
+    <footprint>
+      <platedhole portHints={["pin1", "left", "anode", "pos"]} pcbX={-x} pcbY={0} shape="circle" holeDiameter={RES_HOLE} outerDiameter={RES_PAD} />
+      <platedhole portHints={["pin2", "right", "cathode", "neg"]} pcbX={x} pcbY={0} shape="circle" holeDiameter={RES_HOLE} outerDiameter={RES_PAD} />
+      <silkscreenrect width={4.5} height={2} pcbX={0} pcbY={0} />
+    </footprint>
+  )
+}
+
+// ---- Ceramic disc / film capacitor, THT, 5.08mm lead pitch (non-polarized).
+const CER_LEAD_PITCH = 5.08
+const CER_HOLE = 0.8
+const CER_PAD = 1.7
+
+export const CeramicCapFootprint = () => {
+  const x = CER_LEAD_PITCH / 2
+  return (
+    <footprint>
+      <platedhole portHints={["pin1", "left", "anode", "pos"]} pcbX={-x} pcbY={0} shape="circle" holeDiameter={CER_HOLE} outerDiameter={CER_PAD} />
+      <platedhole portHints={["pin2", "right", "cathode", "neg"]} pcbX={x} pcbY={0} shape="circle" holeDiameter={CER_HOLE} outerDiameter={CER_PAD} />
+    </footprint>
+  )
+}
+
+// ---- 3mm / 5mm LED, THT. Square pad = anode (pin1), round = cathode (pin2).
+const LED_LEAD_PITCH = 2.54
+const LED_HOLE = 0.8
+const LED_PAD = 1.7
+
+export const ThtLedFootprint = () => {
+  const x = LED_LEAD_PITCH / 2
+  return (
+    <footprint>
+      <platedhole portHints={["anode", "pin1", "pos", "left"]} pcbX={-x} pcbY={0} shape="circle" holeDiameter={LED_HOLE} outerDiameter={LED_PAD} />
+      <platedhole portHints={["cathode", "pin2", "neg", "right"]} pcbX={x} pcbY={0} shape="circle" holeDiameter={LED_HOLE} outerDiameter={LED_PAD} />
+      <silkscreencircle radius={2.5} pcbX={0} pcbY={0} />
+      {/* flat side marks cathode (+x) */}
+      <silkscreenline x1={1.8} y1={-1.8} x2={1.8} y2={1.8} strokeWidth={0.2} />
+    </footprint>
+  )
+}

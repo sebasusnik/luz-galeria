@@ -1,4 +1,5 @@
 import { boxModel } from "./cad/boxes"
+import { CeramicCapFootprint } from "./footprints"
 
 type Props = { pcbX?: number; pcbY?: number; pcbRotation?: number | string }
 
@@ -18,7 +19,7 @@ export const RadarConnector = (props: Props) => (
       cadModel={boxModel(14, 6, 6, { color: [0.85, 0.85, 0.88] })}
     />
     {/* 100nF decoupling at the radar VCC */}
-    <capacitor name="C_RDR" capacitance="100nF" footprint="0805" pcbX={0} pcbY={4} />
+    <capacitor name="C_RDR" capacitance="100nF" footprint={<CeramicCapFootprint />} pcbX={0} pcbY={5} />
 
     <silkscreentext text="VCC GND TX RX OUT" fontSize={0.7} pcbX={0} pcbY={-3} />
 

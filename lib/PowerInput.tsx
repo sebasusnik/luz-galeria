@@ -1,13 +1,13 @@
 import { boxModel, cylinderModel } from "./cad/boxes"
-import { BulkCapFootprint } from "./footprints"
+import { BulkCapFootprint, AxialDiodeFootprint } from "./footprints"
 
 type Props = { pcbX?: number; pcbY?: number; pcbRotation?: number | string }
 
 const TERMINAL_2P = "kicad:TerminalBlock/TerminalBlock_MaiXu_MX126-5.0-02P_1x02_P5.00mm"
 
-// 24V entry: screw terminal -> reverse-polarity Schottky (SS54) -> bulk cap.
-// The Schottky sits in the full 24V rail, so everything downstream (buck, strip
-// V+, MOSFET drains) is protected. net.V24 is the protected rail.
+// 24V entry: screw terminal -> reverse-polarity Schottky (1N5822, 3A axial THT)
+// -> bulk cap. The Schottky sits in the full 24V rail, so everything downstream
+// (buck, strip V+, MOSFET drains) is protected. net.V24 is the protected rail.
 export const PowerInput = (props: Props) => (
   <group {...props}>
     <chip
@@ -20,10 +20,9 @@ export const PowerInput = (props: Props) => (
     />
     <diode
       name="D1"
-      footprint="sma"
-      pcbX={-7}
-      pcbY={3}
-      pcbRotation={180}
+      footprint={<AxialDiodeFootprint />}
+      pcbX={-8}
+      pcbY={4}
     />
     <capacitor
       name="C_BULK"

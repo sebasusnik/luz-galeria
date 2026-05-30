@@ -1,5 +1,5 @@
 import { headerModuleModel } from "./cad/boxes"
-import { Mp1584Footprint } from "./footprints"
+import { Mp1584Footprint, AxialResistorFootprint, ThtLedFootprint } from "./footprints"
 
 type Props = { pcbX?: number; pcbY?: number; pcbRotation?: number | string }
 
@@ -16,9 +16,9 @@ export const BuckRegulator = (props: Props) => (
       cadModel={headerModuleModel({ width: 22, depth: 17, bodyH: 5, color: [0.1, 0.1, 0.12] })}
     />
 
-    <resistor name="R_LED" resistance="1k" footprint="0805" pcbX={-2} pcbY={-11} />
-    <led name="LED_PWR" color="green" footprint="0805" pcbX={2} pcbY={-11} />
-    <silkscreentext text="PWR" fontSize={0.8} pcbX={5} pcbY={-11} />
+    <resistor name="R_LED" resistance="1k" footprint={<AxialResistorFootprint />} pcbX={-3} pcbY={-12} />
+    <led name="LED_PWR" color="green" footprint={<ThtLedFootprint />} pcbX={5} pcbY={-12} />
+    <silkscreentext text="PWR" fontSize={0.8} pcbX={8} pcbY={-12} />
 
     <trace from=".U_BUCK > .INp" to="net.V24" thickness="1mm" />
     <trace from=".U_BUCK > .INn" to="net.GND" thickness="1mm" />

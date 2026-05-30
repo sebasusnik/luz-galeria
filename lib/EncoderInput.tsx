@@ -1,5 +1,5 @@
 import { encoderModel } from "./cad/boxes"
-import { Ec11Footprint } from "./footprints"
+import { Ec11Footprint, AxialResistorFootprint, CeramicCapFootprint } from "./footprints"
 
 type Props = { pcbX?: number; pcbY?: number; pcbRotation?: number | string }
 
@@ -20,13 +20,13 @@ export const EncoderInput = (props: Props) => (
 
     {/* support passives sit in the open area to the +X side, clear of the
         encoder body courtyard (which extends ~+15mm from pin1) */}
-    <resistor name="RPU_A" resistance="10k" footprint="0805" pcbX={20} pcbY={7} />
-    <resistor name="RPU_B" resistance="10k" footprint="0805" pcbX={20} pcbY={3.5} />
-    <resistor name="RPU_SW" resistance="10k" footprint="0805" pcbX={20} pcbY={0} />
+    <resistor name="RPU_A" resistance="10k" footprint={<AxialResistorFootprint />} pcbX={20} pcbY={9} />
+    <resistor name="RPU_B" resistance="10k" footprint={<AxialResistorFootprint />} pcbX={20} pcbY={5} />
+    <resistor name="RPU_SW" resistance="10k" footprint={<AxialResistorFootprint />} pcbX={20} pcbY={1} />
 
-    <capacitor name="C_A" capacitance="10nF" footprint="0805" pcbX={23.5} pcbY={7} />
-    <capacitor name="C_B" capacitance="10nF" footprint="0805" pcbX={23.5} pcbY={3.5} />
-    <capacitor name="C_SW" capacitance="10nF" footprint="0805" pcbX={23.5} pcbY={0} />
+    <capacitor name="C_A" capacitance="10nF" footprint={<CeramicCapFootprint />} pcbX={20} pcbY={-3} />
+    <capacitor name="C_B" capacitance="10nF" footprint={<CeramicCapFootprint />} pcbX={20} pcbY={-6} />
+    <capacitor name="C_SW" capacitance="10nF" footprint={<CeramicCapFootprint />} pcbX={20} pcbY={-9} />
 
     {/* encoder pins */}
     <trace from=".ENC > .A" to="net.ENC_A" />
