@@ -27,3 +27,7 @@ yarn-error.log*
 
 # tscircuit cache
 .tscircuit/
+
+# ESPHome secrets (nunca commitear credenciales)
+firmware/secrets.yaml
+firmware/.esphome/

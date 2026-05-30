@@ -1,0 +1,238 @@
+# LUZ-GALERIA v1.0 — Controlador tira LED CCT (ESP32-C3 Super Mini) sobre ESPHome.
+#
+# Funciones:
+#   - Luz CCT (warm + cool white) por PWM dual de hardware (ledc).
+#   - Radar de presencia HLK-LD2410C por UART (presencia + distancia a HA).
+#   - Encoder EC11: girar = brillo, pulsar+girar = temperatura de color, click = toggle.
+#   - Auto-encendido por presencia con timeout (override manual desde el encoder).
+#
+# Pinout (coincide con el PCB / netlist de este repo):
+#   IO10 -> PWM warm white   IO3  -> PWM cool white
+#   IO4  -> Encoder A        IO5  -> Encoder B        IO6 -> Encoder SW
+#   IO7  -> Radar OUT        IO20 -> UART RX (<-TX)   IO21-> UART TX (->RX)
+#
+# IMPORTANTE: confirmá el mapeo de pines contra tu Super Mini físico antes de flashear.
+
+substitutions:
+  name: luz-galeria
+  friendly_name: "Luz Galeria"
+  # Tras cuánto tiempo sin presencia se apaga (o baja) la luz, si está en modo auto.
+  presence_timeout: "90s"
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: esp-idf
+
+logger:
+  # El UART0 físico lo usa el radar (IO20/21); los logs salen por USB-CDC.
+  hardware_uart: USB_SERIAL_JTAG
+
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: "${friendly_name} Fallback"
+    password: !secret fallback_ap_password
+
+captive_portal:
+
+# ---------------------------------------------------------------------------
+# Estado global: ¿el switch del encoder está apretado ahora mismo?
+# Sirve para distinguir "girar" (brillo) de "pulsar+girar" (temperatura).
+# ---------------------------------------------------------------------------
+globals:
+  - id: enc_pressed
+    type: bool
+    restore_value: no
+    initial_value: "false"
+  # Marca si el switch llegó a usarse para ajustar temperatura (giro con pulsado),
+  # para no disparar el toggle al soltar.
+  - id: enc_used_as_modifier
+    type: bool
+    restore_value: no
+    initial_value: "false"
+  # Modo automático por presencia activado/desactivado.
+  - id: auto_mode
+    type: bool
+    restore_value: yes
+    initial_value: "true"
+
+# ---------------------------------------------------------------------------
+# UART para el radar LD2410C
+# ---------------------------------------------------------------------------
+uart:
+  id: uart_radar
+  tx_pin: GPIO21
+  rx_pin: GPIO20
+  baud_rate: 256000
+  parity: NONE
+  stop_bits: 1
+
+ld2410:
+  uart_id: uart_radar
+  id: radar
+
+# ---------------------------------------------------------------------------
+# Salidas PWM (ledc) y luz CWWW
+# ---------------------------------------------------------------------------
+output:
+  - platform: ledc
+    id: out_ww
+    pin: GPIO10
+    frequency: 1000Hz
+  - platform: ledc
+    id: out_cw
+    pin: GPIO3
+    frequency: 1000Hz
+
+light:
+  - platform: cwww
+    id: luz
+    name: "Luz"
+    cold_white: out_cw
+    warm_white: out_ww
+    # Temperaturas de la tira CCT (ajustá a las de tu tira real).
+    cold_white_color_temperature: 6500 K
+    warm_white_color_temperature: 2700 K
+    constant_brightness: true
+    default_transition_length: 400ms
+    restore_mode: RESTORE_DEFAULT_OFF
+
+# ---------------------------------------------------------------------------
+# Encoder EC11: rotación + switch
+# ---------------------------------------------------------------------------
+sensor:
+  - platform: rotary_encoder
+    id: enc
+    name: "Encoder"
+    internal: true
+    pin_a:
+      number: GPIO4
+      mode:
+        input: true
+        pullup: true
+    pin_b:
+      number: GPIO5
+      mode:
+        input: true
+        pullup: true
+    resolution: 1
+    on_clockwise:
+      - lambda: |-
+          if (id(enc_pressed)) {
+            id(enc_used_as_modifier) = true;
+            // pulsar + girar CW = más frío
+            auto call = id(luz).turn_on();
+            float ct = id(luz).remote_values.get_color_temperature();  // mireds
+            call.set_color_temperature(max(ct - 12.0f, 153.0f));       // ->6500K
+            call.set_transition_length(0);
+            call.perform();
+          } else {
+            auto call = id(luz).turn_on();
+            float b = id(luz).remote_values.get_brightness();
+            call.set_brightness(min(b + 0.05f, 1.0f));
+            call.set_transition_length(0);
+            call.perform();
+          }
+    on_anticlockwise:
+      - lambda: |-
+          if (id(enc_pressed)) {
+            id(enc_used_as_modifier) = true;
+            // pulsar + girar CCW = más cálido
+            auto call = id(luz).turn_on();
+            float ct = id(luz).remote_values.get_color_temperature();
+            call.set_color_temperature(min(ct + 12.0f, 370.0f));      // ->2700K
+            call.set_transition_length(0);
+            call.perform();
+          } else {
+            auto call = id(luz).turn_on();
+            float b = id(luz).remote_values.get_brightness();
+            call.set_brightness(max(b - 0.05f, 0.01f));
+            call.set_transition_length(0);
+            call.perform();
+          }
+
+  # Distancia detectada por el radar (útil en HA / automatizaciones).
+  - platform: ld2410
+    ld2410_id: radar
+    moving_distance:
+      name: "Distancia movimiento"
+    still_distance:
+      name: "Distancia quieto"
+
+binary_sensor:
+  # Switch del encoder (activo bajo: pull-up externo 10k, pulsar lleva a GND).
+  - platform: gpio
+    id: enc_sw
+    name: "Encoder switch"
+    internal: true
+    pin:
+      number: GPIO6
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+    on_press:
+      - lambda: |-
+          id(enc_pressed) = true;
+          id(enc_used_as_modifier) = false;
+    on_release:
+      - lambda: |-
+          id(enc_pressed) = false;
+          // Si fue un click "limpio" (no se usó para cambiar temperatura) -> toggle.
+          if (!id(enc_used_as_modifier)) {
+            id(luz).toggle().perform();
+          }
+
+  # Presencia del radar (también cableada por hardware a IO7 como respaldo digital).
+  - platform: ld2410
+    ld2410_id: radar
+    has_target:
+      id: presencia
+      name: "Presencia"
+      on_press:
+        - if:
+            condition:
+              lambda: "return id(auto_mode);"
+            then:
+              - light.turn_on:
+                  id: luz
+                  brightness: 80%
+      on_release:
+        # Al irse la presencia, esperá el timeout y, si sigue sin nadie, apagá.
+        - delay: ${presence_timeout}
+        - if:
+            condition:
+              and:
+                - lambda: "return id(auto_mode);"
+                - binary_sensor.is_off: presencia
+            then:
+              - light.turn_off: luz
+
+# Interruptor en HA para activar/desactivar el modo automático por presencia.
+switch:
+  - platform: template
+    name: "Modo automatico (presencia)"
+    lambda: "return id(auto_mode);"
+    turn_on_action:
+      - lambda: "id(auto_mode) = true;"
+    turn_off_action:
+      - lambda: "id(auto_mode) = false;"
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
